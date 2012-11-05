@@ -5,8 +5,6 @@
 
 (in-package #:go-hello-world)
 
-(defvar *hello-world-kernel* (lp:make-kernel 2))
-
 (defun say-hello (helloq worldq n)
   (dotimes (i n)
     (format t "Hello ")
@@ -21,11 +19,12 @@
     (say-world helloq worldq)))
 
 (defun hello-world (n)
-  (let* ((lp:*kernel*  *hello-world-kernel*)
+  (let* ((lp:*kernel*  (lp:make-kernel 2)) ; a new one each time, as we end it
 	 (channel      (lp:make-channel))
 	 (helloq       (lq:make-queue))
 	 (worldq       (lq:make-queue)))
     (lp:submit-task channel #'say-world helloq worldq)
     (lp:submit-task channel #'say-hello helloq worldq n)
+    (lp:receive-result channel)
     (lp:receive-result channel)
     (lp:end-kernel)))
