@@ -1,8 +1,11 @@
 ;;;; package.lisp
 
 (defpackage #:go-hello-world
+  (:nicknames #:hello)
   (:use #:cl)
-  (:export #:hello-world))
+  (:export #:*hello-world-kernel*
+	   #:hello-world
+	   #:end-kernel))
 
 ;;;
 ;;; Some package names are a little too long to my taste and don't ship with
