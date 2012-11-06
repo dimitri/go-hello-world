@@ -5,15 +5,11 @@
 
 (in-package #:go-hello-world)
 
-(defvar *hello-world-kernel* nil
-  "The lparallel *kernel* we use in this package")
-
 (defmacro with-temp-kernel ((nb-workers &key wait (name "hello-world"))
 			    &body body)
   "Execute BODY with a temporary lparallel *kernel*, then ends it."
   `(progn
-     (setf *hello-world-kernel* (lp:make-kernel ,nb-workers :name ,name))
-     (let ((lp:*kernel* *hello-world-kernel*))
+     (let ((lp:*kernel* (lp:make-kernel ,nb-workers :name ,name)))
        (unwind-protect
 	    (progn ,@body)
 	 (lp:end-kernel :wait ,wait)))))
@@ -24,11 +20,6 @@
   `(with-temp-kernel (,nb-workers :wait ,wait)
      (let ((,channel-name (lp:make-channel)))
        ,@body)))
-
-(defun end-kernel (&key wait)
-  "End *hello-world-kernel*, for debugging purposes"
-  (let* ((lp:*kernel* *hello-world-kernel*))
-    (lp:end-kernel :wait wait)))
 
 (defun say-hello (helloq worldq n)
   (dotimes (i n)
